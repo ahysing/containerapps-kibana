@@ -1,8 +1,7 @@
 param kubeEnvironmentId string
 param location string = 'northeurope'
-param storageAccountKey string
-param storageAccountName string
-param storageContainerName string
+
+var port = 8080
 
 resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
   name: 'emojivoto-emoji'
@@ -13,13 +12,9 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
     configuration: {
       ingress: {
         external: false
-        targetPort: 8080
+        targetPort: port
       }
       secrets: [
-        {
-          name: 'storage-key'
-          value: storageAccountKey
-        }
       ]
     }
     template: {
@@ -30,7 +25,7 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
           env: [
             {
               name: 'GRPC_PORT'
-              value: '8080'
+              value: '${port}'
             }
           ]
           resources: {
@@ -39,32 +34,10 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
           }
         }
       ]
-      dapr: {
-        enabled: true
-        appPort: 8080
-        appId: 'emojivoto-emoji'
-        components: [
-          {
-            name: 'statestore'
-            type: 'state.azure.blobstorage'
-            version: 'v1'
-            metadata: [
-              {
-                name: 'accountName'
-                value: storageAccountName
-              }
-              {
-                name: 'accountKey'
-                secretRef: 'storage-key'
-              }
-              {
-                name: 'containerName'
-                value: storageContainerName
-              }
-            ]
-          }
-        ]
-      }
     }
   }
 }
+
+
+output fqdn string = emoji.properties.configuration.ingress.fqdn
+output port string = '${port}'

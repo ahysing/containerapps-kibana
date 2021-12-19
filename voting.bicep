@@ -1,8 +1,7 @@
 param kubeEnvironmentId string
 param location string = 'northeurope'
-param storageAccountKey string
-param storageAccountName string
-param storageContainerName string
+
+var port = 8080
 
 resource voting 'Microsoft.Web/containerapps@2021-03-01' = {
   name: 'emojivoto-voting'
@@ -13,8 +12,11 @@ resource voting 'Microsoft.Web/containerapps@2021-03-01' = {
     configuration: {
       ingress: {
         external: false
-        targetPort: 8080
+        targetPort: port
+        transport: 'http2'
       }
+      secrets: [
+      ]
     }
     template: {
       containers: [
@@ -24,7 +26,7 @@ resource voting 'Microsoft.Web/containerapps@2021-03-01' = {
           env: [
             {
               name: 'GRPC_PORT'
-              value: '8080'
+              value: '${port}'
             }
           ]
           resources: {
@@ -47,11 +49,10 @@ resource voting 'Microsoft.Web/containerapps@2021-03-01' = {
           }
         ]
       }
-      dapr: {
-        enabled: true
-        appPort: 8080
-        appId: 'emojivoto-voting'
-      }
     }
   }
 }
+
+
+output fqdn string = voting.properties.configuration.ingress.fqdn
+output port string = '${port}'

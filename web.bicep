@@ -1,8 +1,9 @@
 param kubeEnvironmentId string
 param location string = 'northeurope'
-param storageAccountKey string
-param storageAccountName string
-param storageContainerName string
+param emojiFqdn string
+param emojiPort string
+param votingFqdn string
+param votingPort string
 
 resource web 'Microsoft.Web/containerapps@2021-03-01' = {
   name: 'emojivoto-web'
@@ -15,12 +16,6 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
         external: true
         targetPort: 8080
       }
-      secrets: [
-        {
-          name: 'storage-key'
-          value: storageAccountKey
-        }
-      ]
     }
     template: {
       containers: [
@@ -32,15 +27,13 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
               name: 'WEB_PORT'
               value: '8080'
             }
-//              value: 'emojivoto-emoji.internal.${environmentUniqueIdentifier}.${location}.azurecontainerapps.io:8080'
             {
               name: 'EMOJISVC_HOST'
-              value: 'localhost:8080/v1.0/invoke/emojivoto-emoji'
+              value: '${emojiFqdn}:${emojiPort}'
             }
-//              value: 'emojivoto-voting.internal.${environmentUniqueIdentifier}.${location}.azurecontainerapps.io:8080'
             {
               name: 'VOTINGSVC_HOST'
-              value: 'localhost:8080/v1.0/invoke/emojivoto-voting'
+              value: '${votingFqdn}:${votingPort}'
             }
             {
               name: 'INDEX_BUNDLE'
@@ -67,32 +60,8 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
           }
         ]
       }
-      dapr: {
-        enabled: true
-        appPort: 8080
-        appId: 'emojivoto-web'
-        components: [
-          {
-            name: 'statestore'
-            type: 'state.azure.blobstorage'
-            version: 'v1'
-            metadata: [
-              {
-                name: 'accountName'
-                value: storageAccountName
-              }
-              {
-                name: 'accountKey'
-                secretRef: 'storage-key'
-              }
-              {
-                name: 'containerName'
-                value: storageContainerName
-              }
-            ]
-          }
-        ]
-      }
     }
   }
 }
+
+output fqdn string = web.properties.configuration.ingress.fqdn
