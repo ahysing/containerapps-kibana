@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 //
 // verify the application with log analytics in
-// ContainerAppConsoleLogs_CL | where ContainerAppName_s in ('emojivoto-web', 'emojivoto-voting', 'emojivoto-emoji') and ContainerName_s <> 'daprd' | project Log_s, TimeGenerated, ContainerAppName_s, ContainerName_s
+// ContainerAppConsoleLogs_CL | where ContainerAppName_s in ('elasticsearch', 'kibana') | project Log_s, ContainerAppName_s, ContainerName_s, TimeGenerated | order by TimeGenerated desc
 //
 param kubeEnvironment string = 'test'
 param location string = 'northeurope'

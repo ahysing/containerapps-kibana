@@ -1,11 +1,11 @@
 param kubeEnvironmentId string
 param location string = 'northeurope'
-param tag string
+param tag string = '7.16.2'
 
 var port = 8080
 
 resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
-  name: 'emojivoto-emoji'
+  name: 'elasticsearch'
   kind: 'containerapp'
   location: location
   properties: {
@@ -23,22 +23,39 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
     template: {
       containers: [
         {
-          image: 'buoyantio/emojivoto-emoji-svc:${tag}'
-          name: 'emojivoto-emoji'
+          image: 'docker.elastic.co/elasticsearch/elasticsearch:${tag}'
+          name: 'elasticsearch'
           env: [
             {
-              name: 'GRPC_PORT'
-              value: '${port}'
+              name: 'http.cors.enabled'
+              value: 'true'
+            }
+            {
+              name: 'http.cors.allow-origin'
+              value: '/.*/'
+            }
+            {
+              name: 'discovery.type'
+              value: 'single-node'
+            }
+            {
+              name: 'ES_JAVA_OPTS'
+              value: '-Xms2g -Xmx2g'
+            }
+            {
+              name: 'ingest.geoip.downloader.enabled'
+              value: 'false'
             }
           ]
           resources: {
-            cpu: '0.5'
-            memory: '1Gi'
+            cpu: '2'
+            memory: '4Gi'
           }
         }
       ]
       scale: {
         minReplicas: 1
+        maxReplicas: 1
       }
     }
   }

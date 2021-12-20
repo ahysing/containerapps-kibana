@@ -1,11 +1,10 @@
-param emojiFqdn string
+param elasticsearchFqdn string
 param kubeEnvironmentId string
 param location string = 'northeurope'
-param tag string
-param votingFqdn string
+param tag string = '7.16.2'
 
 resource web 'Microsoft.Web/containerapps@2021-03-01' = {
-  name: 'emojivoto-web'
+  name: 'kibana'
   kind: 'containerapp'
   location: location
   properties: {
@@ -19,41 +18,21 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
     template: {
       containers: [
         {
-          image: 'buoyantio/emojivoto-web:${tag}'
-          name: 'emojivoto-web'
+          image: 'docker.elastic.co/kibana/kibana:${tag}'
+          name: 'kibana'
           env: [
             {
-              name: 'WEB_PORT'
-              value: '8080'
+              name: 'ELASTICSEARCH_HOSTS'
+              value: 'https://${elasticsearchFqdn}:433'
             }
             {
-              name: 'EMOJISVC_HOST'
-              value: 'dns://${emojiFqdn}:443'
-            }
-            {
-              name: 'VOTINGSVC_HOST'
-              value: 'dns://${votingFqdn}:443'
-            }
-            {
-              name: 'INDEX_BUNDLE'
-              value: 'dist/index_bundle.js'
-            }
-            {
-              name: 'GRPC_GO_LOG_VERBOSITY_LEVEL'
-              value: '99'
-            }
-            {
-              name: 'GRPC_GO_LOG_SEVERITY_LEVEL'
-              value: 'info'
-            }
-            {
-              name: 'GODEBUG'
-              value: 'http2debug=2'
+              name: 'NODE_OPTIONS'
+              value: '--max-old-space-size=2048'
             }
           ]
           resources: {
-            cpu: '0.5'
-            memory: '1Gi'
+            cpu: '1.5'
+            memory: '3Gi'
           }
         }
       ]
@@ -65,7 +44,7 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
             name: 'http-rule'
             http: {
               metadata: {
-                concurrentRequests: '100'
+                concurrentRequests: '50'
               }
             }
           }
