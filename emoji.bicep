@@ -1,5 +1,6 @@
 param kubeEnvironmentId string
 param location string = 'northeurope'
+param tag string
 
 var port = 8080
 
@@ -13,6 +14,8 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
       ingress: {
         external: false
         targetPort: port
+        transport: 'http2'
+        allowInsecure: true
       }
       secrets: [
       ]
@@ -20,7 +23,7 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
     template: {
       containers: [
         {
-          image: 'buoyantio/emojivoto-emoji-svc:v12'
+          image: 'buoyantio/emojivoto-emoji-svc:${tag}'
           name: 'emojivoto-emoji'
           env: [
             {
@@ -34,6 +37,9 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
           }
         }
       ]
+      scale: {
+        minReplicas: 1
+      }
     }
   }
 }

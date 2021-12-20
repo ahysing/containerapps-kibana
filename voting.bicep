@@ -1,5 +1,6 @@
 param kubeEnvironmentId string
 param location string = 'northeurope'
+param tag string
 
 var port = 8080
 
@@ -14,6 +15,7 @@ resource voting 'Microsoft.Web/containerapps@2021-03-01' = {
         external: false
         targetPort: port
         transport: 'http2'
+        allowInsecure: true
       }
       secrets: [
       ]
@@ -21,7 +23,7 @@ resource voting 'Microsoft.Web/containerapps@2021-03-01' = {
     template: {
       containers: [
         {
-          image: 'buoyantio/emojivoto-voting-svc:v12'
+          image: 'buoyantio/emojivoto-voting-svc:${tag}'
           name: 'emojivoto-voting'
           env: [
             {
@@ -36,18 +38,7 @@ resource voting 'Microsoft.Web/containerapps@2021-03-01' = {
         }
       ]
       scale: {
-        minReplicas: 0
-        maxReplicas: 8
-        rules: [
-          {
-            name: 'http-rule'
-            http: {
-              metadata: {
-                concurrentRequests: '100'
-              }
-            }
-          }
-        ]
+        minReplicas: 1
       }
     }
   }

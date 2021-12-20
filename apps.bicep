@@ -2,6 +2,8 @@ param kubeEnvironment string
 param location string = 'northeurope'
 
 var workspaceName = 'nicx-${kubeEnvironment}-la'
+var tag = 'v11'
+
 resource workspace 'Microsoft.OperationalInsights/workspaces@2020-08-01' = {
   name: workspaceName
   location: location
@@ -20,7 +22,8 @@ resource ke 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
   location: location
   properties: {
     type: 'Managed'
-    internalLoadBalancerEnabled: true
+    internalLoadBalancerEnabled: false // this is a requirement for GRPC
+//    internalLoadBalancerEnabled: true
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
@@ -38,6 +41,7 @@ module voting './voting.bicep' = {
   params: {
     kubeEnvironmentId: kubeEnvironmentId
     location: location
+    tag: tag
   }
   dependsOn: [
     ke
@@ -50,6 +54,7 @@ module emoji './emoji.bicep' = {
   params: {
     kubeEnvironmentId: kubeEnvironmentId
     location: location
+    tag: tag
   }
   dependsOn: [
     ke
@@ -59,12 +64,11 @@ module emoji './emoji.bicep' = {
 module web './web.bicep' = {
   name: 'web'
   params: {
-    kubeEnvironmentId: kubeEnvironmentId
     emojiFqdn: emoji.outputs.fqdn
-    emojiPort: '443'
-    votingFqdn: voting.outputs.fqdn
-    votingPort: '443'
+    kubeEnvironmentId: kubeEnvironmentId
     location: location
+    tag: tag
+    votingFqdn: voting.outputs.fqdn
   }
   dependsOn: [
     ke

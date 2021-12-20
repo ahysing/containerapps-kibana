@@ -1,9 +1,8 @@
+param emojiFqdn string
 param kubeEnvironmentId string
 param location string = 'northeurope'
-param emojiFqdn string
-param emojiPort string
+param tag string
 param votingFqdn string
-param votingPort string
 
 resource web 'Microsoft.Web/containerapps@2021-03-01' = {
   name: 'emojivoto-web'
@@ -20,7 +19,7 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
     template: {
       containers: [
         {
-          image: 'buoyantio/emojivoto-web:v12'
+          image: 'buoyantio/emojivoto-web:${tag}'
           name: 'emojivoto-web'
           env: [
             {
@@ -29,15 +28,27 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
             }
             {
               name: 'EMOJISVC_HOST'
-              value: '${emojiFqdn}:${emojiPort}'
+              value: 'dns://${emojiFqdn}:443'
             }
             {
               name: 'VOTINGSVC_HOST'
-              value: '${votingFqdn}:${votingPort}'
+              value: 'dns://${votingFqdn}:443'
             }
             {
               name: 'INDEX_BUNDLE'
               value: 'dist/index_bundle.js'
+            }
+            {
+              name: 'GRPC_GO_LOG_VERBOSITY_LEVEL'
+              value: '99'
+            }
+            {
+              name: 'GRPC_GO_LOG_SEVERITY_LEVEL'
+              value: 'info'
+            }
+            {
+              name: 'GODEBUG'
+              value: 'http2debug=2'
             }
           ]
           resources: {
@@ -47,7 +58,7 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
         }
       ]
       scale: {
-        minReplicas: 0
+        minReplicas: 1
         maxReplicas: 8
         rules: [
           {
