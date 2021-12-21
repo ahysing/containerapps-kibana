@@ -12,7 +12,7 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
     configuration: {
       ingress: {
         external: true
-        targetPort: 8080
+        targetPort: 5601
       }
     }
     template: {
@@ -23,11 +23,11 @@ resource web 'Microsoft.Web/containerapps@2021-03-01' = {
           env: [
             {
               name: 'ELASTICSEARCH_HOSTS'
-              value: 'https://${elasticsearchFqdn}:433'
+              value: '["https://${elasticsearchFqdn}"]'
             }
             {
               name: 'NODE_OPTIONS'
-              value: '--max-old-space-size=2048'
+              value: '--max-old-space-size=3072'
             }
           ]
           resources: {

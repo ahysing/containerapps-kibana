@@ -2,7 +2,7 @@ param kubeEnvironmentId string
 param location string = 'northeurope'
 param tag string = '7.16.2'
 
-var port = 8080
+var port = 9200
 
 resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
   name: 'elasticsearch'
@@ -14,8 +14,7 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
       ingress: {
         external: false
         targetPort: port
-        transport: 'http2'
-        allowInsecure: true
+        transport: 'Auto'
       }
       secrets: [
       ]
@@ -63,4 +62,3 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
 
 
 output fqdn string = emoji.properties.configuration.ingress.fqdn
-output port string = '${port}'
