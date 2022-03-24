@@ -6,9 +6,9 @@ This is a working example of [elasticsearch](https://www.elastic.co/elasticsearc
 
 ## Disclaimer
 
-This is a demonstration only, and should not be used in any serious context without monifications. The drawbacks of this configuration are
+This is a demonstration only, and should not be used in any serious context without modifications. The drawbacks of this configuration are
 
-* The trail license is default for kibana. No customer support
+* The trail license is default for kibana. You get no customer support with this license
 * No mounted volumes. All data in elasticsearch is stored inside the docker container
 
 ## Provision

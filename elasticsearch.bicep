@@ -14,7 +14,7 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
       ingress: {
         external: false
         targetPort: port
-        transport: 'Auto'
+        transport: 'auto'
       }
       secrets: [
       ]
@@ -47,7 +47,7 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
             }
           ]
           resources: {
-            cpu: '2'
+            cpu: 2
             memory: '4Gi'
           }
         }
