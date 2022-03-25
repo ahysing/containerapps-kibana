@@ -4,7 +4,7 @@ param tag string = '7.16.2'
 
 var port = 9200
 
-resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
+resource elasticsearch 'Microsoft.Web/containerapps@2021-03-01' = {
   name: 'elasticsearch'
   kind: 'containerapp'
   location: location
@@ -61,4 +61,4 @@ resource emoji 'Microsoft.Web/containerapps@2021-03-01' = {
 }
 
 
-output fqdn string = emoji.properties.configuration.ingress.fqdn
+output fqdn string = elasticsearch.properties.configuration.ingress.fqdn
