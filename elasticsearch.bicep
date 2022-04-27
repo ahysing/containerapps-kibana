@@ -1,20 +1,26 @@
-param kubeEnvironmentId string
+param managedEnvironmentId string
 param location string = 'northeurope'
 param tag string = '7.16.2'
 
 var port = 9200
 
-resource elasticsearch 'Microsoft.Web/containerapps@2021-03-01' = {
+resource elasticsearch 'Microsoft.App/containerapps@2022-01-01-preview' = {
   name: 'elasticsearch'
-  kind: 'containerapp'
   location: location
   properties: {
-    kubeEnvironmentId: kubeEnvironmentId
+    managedEnvironmentId: managedEnvironmentId
     configuration: {
+      activeRevisionsMode: 'multiple'
       ingress: {
         external: false
         targetPort: port
         transport: 'auto'
+        traffic: [
+          {
+            weight: 100
+            latestRevision: true
+          }
+        ]
       }
       secrets: [
       ]

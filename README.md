@@ -13,6 +13,13 @@ This is a demonstration only, and should not be used in any serious context with
 
 ## Provision
 
+First enable container apps as seen on [Quickstart: Deploy your first container app](https://docs.microsoft.com/EN-US/azure/container-apps/get-started?tabs=bash)
+
+```bash
+az extension add --name containerapp
+az provider register --namespace Microsoft.App
+```
+
 ```bash
 az login
 az account set -s <your subscription name>

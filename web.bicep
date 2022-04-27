@@ -1,19 +1,24 @@
 param elasticsearchFqdn string
-param kubeEnvironmentId string
+param managedEnvironmentId string
 param location string = 'northeurope'
 param tag string = '7.16.2'
 
-resource web 'Microsoft.Web/containerapps@2021-03-01' = {
+resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
   name: 'kibana'
-  kind: 'containerapp'
   location: location
   properties: {
-    kubeEnvironmentId: kubeEnvironmentId
+    managedEnvironmentId: managedEnvironmentId
     configuration: {
       ingress: {
         external: true
         targetPort: 5601
       }
+      traffic: [
+        {
+          latestRevision: true
+          weight: 100
+        }
+      ]
     }
     template: {
       containers: [

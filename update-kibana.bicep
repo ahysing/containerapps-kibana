@@ -3,22 +3,27 @@ param kubeEnvironment string
 param location string
 param tag string
 
-resource elasticsearch 'Microsoft.Web/containerapps@2021-03-01' existing = {
+resource elasticsearch 'Microsoft.App/containerapps@2022-01-01-preview' existing = {
   name: 'elasticsearch'
 }
 
-var kubeEnvironmentId = resourceId('Microsoft.Web/kubeEnvironments', kubeEnvironment)
-resource web 'Microsoft.Web/containerapps@2021-03-01' = {
+var managedEnvironmentId = resourceId('Microsoft.Web/kubeEnvironments', kubeEnvironment)
+resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
   name: 'kibana'
-  kind: 'containerapp'
   location: location
   properties: {
-    kubeEnvironmentId: kubeEnvironmentId
+    managedEnvironmentId: managedEnvironmentId
     configuration: {
       ingress: {
         external: true
         targetPort: 5601
       }
+      traffic: [
+        {
+          weight: 100
+          latestRevision: true
+        }
+      ]
     }
     template: {
       containers: [

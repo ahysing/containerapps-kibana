@@ -16,14 +16,10 @@ resource workspace 'Microsoft.OperationalInsights/workspaces@2020-08-01' = {
   }
 }
 
-// https://blog.johnnyreilly.com/2021/12/19/azure-container-apps-bicep-and-github-actions/
-resource ke 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
+resource managedEnvironment 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: kubeEnvironment
   location: location
   properties: {
-    type: 'Managed'
-//    internalLoadBalancerEnabled: false // this is a requirement for GRPC
-    internalLoadBalancerEnabled: true
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
@@ -34,17 +30,17 @@ resource ke 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
   }
 }
 
-var kubeEnvironmentId = resourceId('Microsoft.Web/kubeEnvironments', kubeEnvironment)
+var managedEnvironmentId = resourceId('Microsoft.App/managedEnvironments', kubeEnvironment)
 
 module elasticsearch './elasticsearch.bicep' = {
   name: 'elasticsearch'
   params: {
-    kubeEnvironmentId: kubeEnvironmentId
+    managedEnvironmentId: managedEnvironmentId
     location: location
     tag: tag
   }
   dependsOn: [
-    ke
+    managedEnvironment
   ]
 }
 
@@ -52,11 +48,11 @@ module web './web.bicep' = {
   name: 'web'
   params: {
     elasticsearchFqdn: elasticsearch.outputs.fqdn
-    kubeEnvironmentId: kubeEnvironmentId
+    managedEnvironmentId: managedEnvironmentId
     location: location
     tag: tag
   }
   dependsOn: [
-    ke
+    managedEnvironment
   ]
 }
