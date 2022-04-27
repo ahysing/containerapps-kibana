@@ -7,7 +7,7 @@ resource elasticsearch 'Microsoft.App/containerapps@2022-01-01-preview' existing
   name: 'elasticsearch'
 }
 
-var managedEnvironmentId = resourceId('Microsoft.Web/kubeEnvironments', kubeEnvironment)
+var managedEnvironmentId = resourceId('Microsoft.App/managedEnvironments', kubeEnvironment)
 resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
   name: 'kibana'
   location: location
