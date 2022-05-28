@@ -2,7 +2,7 @@ targetScope = 'subscription'
 param kibanaFqdn string
 param kubeEnvironment string
 param location string = 'northeurope'
-param tag string = '7.16.2'
+param tag string = '8.2.2'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: 'nicx-${kubeEnvironment}-rg'

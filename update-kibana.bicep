@@ -17,13 +17,13 @@ resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
       ingress: {
         external: true
         targetPort: 5601
+        traffic: [
+          {
+            weight: 100
+            latestRevision: true
+          }
+        ]
       }
-      traffic: [
-        {
-          weight: 100
-          latestRevision: true
-        }
-      ]
     }
     template: {
       containers: [

@@ -5,9 +5,10 @@ targetScope = 'subscription'
 //
 param kubeEnvironment string = 'test'
 param location string = 'northeurope'
+param resourceGroupPrefix string = 'nicx'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: 'nicx-${kubeEnvironment}-rg'
+  name: '${resourceGroupPrefix}-${kubeEnvironment}-rg'
   location: location
 }
 

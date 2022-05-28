@@ -1,7 +1,7 @@
 param elasticsearchFqdn string
 param managedEnvironmentId string
 param location string = 'northeurope'
-param tag string = '7.16.2'
+param tag string = '8.2.2'
 
 resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
   name: 'kibana'
@@ -12,13 +12,13 @@ resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
       ingress: {
         external: true
         targetPort: 5601
+        traffic: [
+          {
+            weight: 100
+            latestRevision: true
+          }
+        ]
       }
-      traffic: [
-        {
-          latestRevision: true
-          weight: 100
-        }
-      ]
     }
     template: {
       containers: [

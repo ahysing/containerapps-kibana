@@ -1,6 +1,6 @@
 param managedEnvironmentId string
 param location string = 'northeurope'
-param tag string = '7.16.2'
+param tag string = '8.2.2'
 
 var port = 9200
 
