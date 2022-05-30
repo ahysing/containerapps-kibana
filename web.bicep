@@ -1,8 +1,21 @@
 param elasticsearchFqdn string
 param managedEnvironmentId string
 param location string = 'northeurope'
-param tag string = '8.2.2'
+param tag string = '7.17.4'
+param addEnvs array = []
 
+var initialEnvs = [
+  {
+    name: 'ELASTICSEARCH_HOSTS'
+    value: '["https://${elasticsearchFqdn}"]'
+  }
+  {
+    name: 'NODE_OPTIONS'
+    value: '--max-old-space-size=3072'
+  }
+]
+
+var envs = concat(initialEnvs, addEnvs)
 resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
   name: 'kibana'
   location: location
@@ -18,6 +31,7 @@ resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
             latestRevision: true
           }
         ]
+        allowInsecure: false
       }
     }
     template: {
@@ -25,16 +39,7 @@ resource web 'Microsoft.App/containerapps@2022-01-01-preview' = {
         {
           image: 'docker.elastic.co/kibana/kibana:${tag}'
           name: 'kibana'
-          env: [
-            {
-              name: 'ELASTICSEARCH_HOSTS'
-              value: '["https://${elasticsearchFqdn}"]'
-            }
-            {
-              name: 'NODE_OPTIONS'
-              value: '--max-old-space-size=3072'
-            }
-          ]
+          env: envs
           resources: {
             cpu: '1.5'
             memory: '3Gi'

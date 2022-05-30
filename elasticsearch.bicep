@@ -10,7 +10,7 @@ resource elasticsearch 'Microsoft.App/containerapps@2022-01-01-preview' = {
   properties: {
     managedEnvironmentId: managedEnvironmentId
     configuration: {
-      activeRevisionsMode: 'multiple'
+      activeRevisionsMode: 'single'
       ingress: {
         external: false
         targetPort: port
@@ -21,6 +21,7 @@ resource elasticsearch 'Microsoft.App/containerapps@2022-01-01-preview' = {
             latestRevision: true
           }
         ]
+        allowInsecure: true
       }
       secrets: [
       ]
@@ -49,6 +50,14 @@ resource elasticsearch 'Microsoft.App/containerapps@2022-01-01-preview' = {
             }
             {
               name: 'ingest.geoip.downloader.enabled'
+              value: 'false'
+            }
+            {
+              name: 'xpack.security.enabled'
+              value: 'false'
+            }
+            {
+              name: 'xpack.security.http.ssl.enabled'
               value: 'false'
             }
           ]
